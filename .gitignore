@@ -1,0 +1,49 @@
+# Rust
+target/
+debug/
+release/
+*.rs.bk
+*.rlib
+*.prof*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Test coverage
+coverage/
+*.profraw
+*.profdata
+
+# Documentation
+target/doc/
+
+# Cargo lock for binary projects (keep this for reproducible builds)
+# Cargo.lock is intentionally tracked for binary crates
+
+
+# Added by cargo
+
+/target
