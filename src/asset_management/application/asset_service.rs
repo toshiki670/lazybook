@@ -37,11 +37,11 @@ impl<R: AssetRepository> AssetService<R> {
         // Since SQLite auto-increments, we need to query for the last inserted row
         // For now, we'll retrieve by name (this is a simplification for Walking Skeleton)
         let assets = self.repository.find_all()?;
-        if let Some(saved_asset) = assets.last() {
-            if let Some(id) = saved_asset.id {
-                asset.id = Some(id);
-                return Ok(id);
-            }
+        if let Some(saved_asset) = assets.last()
+            && let Some(id) = saved_asset.id
+        {
+            asset.id = Some(id);
+            return Ok(id);
         }
 
         Err(AssetError::DatabaseError(
