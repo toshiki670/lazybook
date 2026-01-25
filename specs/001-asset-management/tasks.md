@@ -63,11 +63,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
+**FRs**: FR-010, FR-011, FR-013 (基盤要件: データ永続化、起動時読み込み、キーボード操作)
+
 - [X] T009 Implement Error types in src/asset_management/domain/shared/types.rs: AssetError, CategoryError, PriceError using thiserror
 - [X] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
 - [X] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
 - [X] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
-- [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database()
+- [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
 - [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
@@ -80,7 +82,7 @@
 
 **Independent Test**: 資産を1件登録し、登録した情報が正しく保存されていることを確認
 
-**FRs**: FR-001, FR-002, FR-010, FR-012, FR-014, FR-022
+**FRs**: FR-001, FR-002, FR-010, FR-011, FR-012, FR-013, FR-014, FR-022
 **SCs**: SC-001 (30秒以内に登録)
 
 ---
@@ -106,12 +108,12 @@
 - [X] T018 [S1] [US1] Implement minimal AssetService in src/asset_management/application/asset_service.rs: create_asset(name) -> Result<Asset>
 
 **Presentation Layer**:
-- [X] T019 [S1] [US1] Implement minimal AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: render name input field, handle Enter key, save action
-- [X] T020 [S1] [US1] Implement minimal AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: render table with name column, display all assets
-- [X] T021 [S1] [US1] Implement minimal App state machine in src/asset_management/presentation/app.rs: Screen enum (List, Form), transition logic, event loop
+- [X] T019 [S1] [US1] Implement minimal AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: render name input field, handle Enter key, save action (FR-013: キーボードのみ操作)
+- [X] T020 [S1] [US1] Implement minimal AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: render table with name column, display all assets (FR-013: キーボードのみ操作)
+- [X] T021 [S1] [US1] Implement minimal App state machine in src/asset_management/presentation/app.rs: Screen enum (List, Form), transition logic, event loop (FR-013: キーボードのみ操作)
 
 **Integration**:
-- [X] T022 [S1] [US1] Wire up main.rs: initialize database, apply migrations, launch TUI app
+- [X] T022 [S1] [US1] Wire up main.rs: initialize database, apply migrations, launch TUI app (FR-010, FR-011: データ永続化と起動時読み込み)
 
 **Checkpoint**: ✅ **DEMO** - `cargo run` → TUI起動 → 名前入力 → 保存 → 一覧画面に表示される（8タスク完了）
 
@@ -359,7 +361,7 @@
 
 **Independent Test**: 既存の資産を編集し、変更が正しく保存されることを確認
 
-**FRs**: FR-008, FR-012, FR-022
+**FRs**: FR-008, FR-012, FR-022, FR-033
 
 ---
 
@@ -374,7 +376,7 @@
 **Implementation**:
 
 **Domain Layer**:
-- [ ] T075 [S1] [US4] Add update methods to Asset entity in src/asset_management/domain/asset/entity.rs: update_name(), update_manufacturer(), update_memo(), update_categories()
+- [ ] T075 [S1] [US4] Add update methods to Asset entity in src/asset_management/domain/asset/entity.rs: update_name(), update_manufacturer(), update_memo(), update_categories() (FR-033: カテゴリ追加・削除機能)
 
 **Infrastructure Layer**:
 - [ ] T076 [S1] [US4] Extend AssetRepository trait in src/asset_management/domain/asset/repository.rs: update(asset)
@@ -384,7 +386,7 @@
 - [ ] T078 [S1] [US4] Implement AssetService::update_asset in src/asset_management/application/asset_service.rs: update_asset(id, ...) with ChangeHistory recording
 
 **Presentation Layer**:
-- [ ] T079 [S1] [US4] Extend AssetFormScreen with Edit mode in src/asset_management/presentation/screens/asset_form.rs: load_existing_asset(), pre-populate fields, update_asset() on save
+- [ ] T079 [S1] [US4] Extend AssetFormScreen with Edit mode in src/asset_management/presentation/screens/asset_form.rs: load_existing_asset(), pre-populate fields, update_asset() on save (FR-033: 編集時のカテゴリ追加・削除UI)
 - [ ] T080 [S1] [US4] Add edit transition from AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs: E key to enter edit mode
 
 **Checkpoint**: ✅ **DEMO** - 詳細画面でEキー → 編集モード → 変更 → 保存（8タスク）

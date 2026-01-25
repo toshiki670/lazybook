@@ -13,11 +13,11 @@
 
 **Language/Version**: Rust (stable toolchain - 1.75 or later)  
 **Primary Dependencies**: 
-- TUI framework: NEEDS CLARIFICATION (ratatui vs cursive vs tui-rs)
-- SQLite access: NEEDS CLARIFICATION (rusqlite vs diesel vs sqlx)
-- CLI parsing: NEEDS CLARIFICATION (clap vs structopt)
-- Date/time handling: chrono
-- Error handling: anyhow or thiserror
+- TUI framework: ratatui@0.30 (実装済み、research.mdで選定完了)
+- SQLite access: rusqlite@0.38 (bundled feature, 実装済み、research.mdで選定完了)
+- CLI parsing: clap@4.4 (derive feature, 実装済み、research.mdで選定完了)
+- Date/time handling: chrono@0.4 (実装済み)
+- Error handling: thiserror@2.0 (domain layer, 実装済み) + anyhow@1.0 (application/infrastructure layer, 実装済み)
 
 **Storage**: SQLite (local file, no encryption at application level)  
 **Testing**: cargo test (unit tests), integration tests for domain logic, contract tests for TUI components  
