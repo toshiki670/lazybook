@@ -87,12 +87,11 @@ fn find_migration_files() -> Result<Vec<(i32, std::path::PathBuf)>> {
 
         if path.extension().and_then(|s| s.to_str()) == Some("sql") {
             // Extract version number from filename (e.g., "001_initial_schema.sql" -> 1)
-            if let Some(filename) = path.file_name().and_then(|s| s.to_str()) {
-                if let Some(version_str) = filename.split('_').next() {
-                    if let Ok(version) = version_str.parse::<i32>() {
-                        migrations.push((version, path));
-                    }
-                }
+            if let Some(filename) = path.file_name().and_then(|s| s.to_str())
+                && let Some(version_str) = filename.split('_').next()
+                && let Ok(version) = version_str.parse::<i32>()
+            {
+                migrations.push((version, path));
             }
         }
     }
