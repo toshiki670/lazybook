@@ -54,11 +54,10 @@ fn create_schema_version_table(conn: &Connection) -> Result<()> {
 
 /// Get current schema version
 fn get_current_version(conn: &Connection) -> Result<i32> {
-    let version: Result<Option<i32>, rusqlite::Error> = conn.query_row(
-        "SELECT MAX(version) FROM schema_version",
-        [],
-        |row| row.get(0),
-    );
+    let version: Result<Option<i32>, rusqlite::Error> =
+        conn.query_row("SELECT MAX(version) FROM schema_version", [], |row| {
+            row.get(0)
+        });
 
     match version {
         Ok(Some(v)) => Ok(v),

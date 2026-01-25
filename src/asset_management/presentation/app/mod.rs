@@ -3,11 +3,11 @@
 use anyhow::Result;
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use ratatui::{
+    Frame, Terminal,
     backend::Backend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, List, ListItem, Paragraph},
-    Frame, Terminal,
 };
 
 use crate::asset_management::application::asset_service::AssetService;
@@ -118,11 +118,7 @@ impl<R: AssetRepository> App<R> {
             .collect();
 
         let title_text = format!("資産一覧 (全 {} 件)", self.assets.len());
-        let list = List::new(items).block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(title_text),
-        );
+        let list = List::new(items).block(Block::default().borders(Borders::ALL).title(title_text));
         f.render_widget(list, chunks[1]);
 
         // Help

@@ -8,15 +8,15 @@ pub mod screens;
 use anyhow::Result;
 use crossterm::{
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
-use ratatui::{backend::CrosstermBackend, Terminal};
+use ratatui::{Terminal, backend::CrosstermBackend};
 use std::io;
 use std::path::PathBuf;
 
 use crate::asset_management::application::asset_service::AssetService;
 use crate::asset_management::infrastructure::persistence::{
-    establish_connection, initialize_database, SqliteAssetRepository,
+    SqliteAssetRepository, establish_connection, initialize_database,
 };
 
 /// Run the TUI application

@@ -3,7 +3,7 @@
 
 use lazybook::asset_management::application::asset_service::AssetService;
 use lazybook::asset_management::infrastructure::persistence::{
-    establish_connection, initialize_database, SqliteAssetRepository,
+    SqliteAssetRepository, establish_connection, initialize_database,
 };
 use std::path::PathBuf;
 use tempfile::TempDir;
