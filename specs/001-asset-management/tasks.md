@@ -69,6 +69,7 @@
 - [X] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
 - [X] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
 - [X] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
+  - ⚠️ **TODO**: Add transaction management to apply_migration() - wrap SQL execution and schema_version record in transaction (rusqlite::Connection::transaction())
 - [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
 - [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
 
@@ -139,6 +140,7 @@
 **Infrastructure Layer**:
 - [ ] T028 [S2] [US1] Implement SqliteCategoryRepository in src/asset_management/infrastructure/persistence/category_repository.rs: find_all(), find_by_id(), find_roots()
 - [ ] T029 [S2] [US1] Extend SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save with asset_categories junction table, find_all with JOIN
+  - ⚠️ **TODO**: Add transaction management to save() - wrap Asset + AssetCategory operations in transaction (rusqlite::Connection::transaction())
 
 **Application Layer**:
 - [ ] T030 [S2] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: create_asset(name, category_ids), list_categories()
@@ -202,6 +204,7 @@
 
 **Application Layer**:
 - [ ] T046 [S4] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: record ChangeHistory after create_asset() operation
+  - ⚠️ **TODO**: Add transaction management - wrap Asset + AssetCategory + ChangeHistory operations in transaction (Transaction Boundary from data-model.md)
 
 **Checkpoint**: ✅ **DEMO** - 資産作成 → change_histories テーブルにレコード保存確認（4タスク累計31）
 

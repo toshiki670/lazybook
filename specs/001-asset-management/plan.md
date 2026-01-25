@@ -20,6 +20,11 @@
 - Error handling: thiserror@2.0 (domain layer, 実装済み) + anyhow@1.0 (application/infrastructure layer, 実装済み)
 
 **Storage**: SQLite (local file, no encryption at application level)  
+**Transaction Management**: 
+- マイグレーション: 各マイグレーションをトランザクション内で実行（rusqliteの`transaction()`を使用）
+- Repository操作: 複数テーブルへの操作（Asset + AssetCategory + ChangeHistory等）を同一トランザクション内で実行
+- エラー時は自動ロールバック（TransactionのDrop実装）
+- ロールバック機能自体は安定バージョンリリース後に検討（現時点では自動ロールバックで対応）
 **Testing**: cargo test (unit tests), integration tests for domain logic, contract tests for TUI components  
 **Target Platform**: macOS, Linux (terminal environments with UTF-8 support)  
 **Project Type**: Single Rust project with TUI binary  
@@ -286,3 +291,29 @@ fn main() -> Result<()> {
 ## Complexity Tracking
 
 > **No violations detected.** All constitution requirements are met or explicitly documented.
+
+## Implementation Considerations
+
+### Transaction Management
+
+**現状**: トランザクション管理は未実装。rusqliteは完全にサポートしていることを確認済み。
+
+**検討事項**:
+
+1. **マイグレーションのトランザクション管理** (Phase 2 T012):
+   - 各マイグレーションをトランザクション内で実行
+   - `schema_version`への記録も同一トランザクション内で実行
+   - エラー時は自動ロールバック（TransactionのDrop実装）
+   - **実装方針**: `rusqlite::Connection::transaction()`を使用
+
+2. **Repository操作のトランザクション管理** (Phase 3以降):
+   - Asset作成時: Asset + AssetCategory + ChangeHistory を同一トランザクション内で実行
+   - Asset更新時: Asset + AssetCategory + ChangeHistory を同一トランザクション内で実行
+   - Asset削除時: Asset + 関連履歴 + ChangeHistory を同一トランザクション内で実行
+   - **実装方針**: Repository層でトランザクション管理、Application層からは意識しない設計
+
+3. **ロールバック機能**:
+   - 現時点では自動ロールバック（TransactionのDrop実装）で対応
+   - 明示的なロールバック機能は安定バージョンリリース後に検討
+
+**参考**: data-model.md の "Transaction Boundary" セクション参照
