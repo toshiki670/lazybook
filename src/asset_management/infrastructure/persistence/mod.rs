@@ -1,8 +1,8 @@
 // Persistence infrastructure
 
-pub mod migrations;
 mod asset_repository;
 mod category_repository;
+pub mod migrations;
 
 pub use asset_repository::SqliteAssetRepository;
 // Note: SqliteCategoryRepository not used yet - will be needed in later slices

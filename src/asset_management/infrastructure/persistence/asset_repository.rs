@@ -3,7 +3,7 @@
 use crate::asset_management::domain::asset::{Asset, AssetRepository};
 use crate::asset_management::domain::shared::{AssetError, AssetId, CategoryId};
 use chrono::NaiveDateTime;
-use rusqlite::{params, Connection, Result as SqliteResult, Row};
+use rusqlite::{Connection, Result as SqliteResult, Row, params};
 use std::sync::{Arc, Mutex};
 
 /// SQLite implementation of AssetRepository
