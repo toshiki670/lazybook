@@ -1,19 +1,19 @@
 <!--
 Sync Impact Report
 ==================
-Version Change: 0.1.0 → 0.2.0
+Version Change: 0.2.0 → 0.3.0
 Modified Principles: None
 Added Sections:
-  - Development Workflow > Branch Strategy (base branch, feature branches, lifecycle, merge strategy, integration rules)
+  - Core Principles > Principle VIII: Bounded Context Architecture
 Removed Sections: None
 Templates Status:
   ✅ .specify/templates/plan-template.md - aligned, no changes needed
   ✅ .specify/templates/spec-template.md - aligned, no changes needed
   ✅ .specify/templates/tasks-template.md - aligned, no changes needed
-  ✅ .cursor/commands/*.md - reviewed, speckit.specify already enforces branch naming
+  ✅ .cursor/commands/*.md - aligned, no changes needed
   ✅ README.md - no updates needed
 Follow-up TODOs: None
-Note: Version 0.2.0 - Added branch strategy guidance for trunk-based development
+Note: Version 0.3.0 - Added Bounded Context Architecture principle for multi-domain management
 -->
 
 # lazybook Constitution
@@ -61,6 +61,35 @@ All feature implementations MUST follow Domain-Driven Design principles. Domain 
 The primary user interface MUST be a Text-based User Interface (TUI). All interactive features MUST be accessible through keyboard navigation. UI state management MUST be separated from domain logic. TUI components MUST be composable and reusable. The interface MUST provide clear visual feedback for all user actions and system states.
 
 **Rationale**: TUI interfaces provide efficient keyboard-driven workflows for power users, work consistently across terminal environments, and minimize system resource usage while maintaining rich interactivity.
+
+### VIII. Bounded Context Architecture
+
+lazybook is a multi-domain personal information management tool structured as multiple Bounded Contexts. Each Bounded Context MUST represent a distinct domain with its own ubiquitous language, models, and business rules. Context boundaries MUST be explicit and enforced through module structure. Each context MUST own its data and expose well-defined interfaces for integration with other contexts. Shared concerns MUST be extracted to a Shared Kernel accessible to all contexts.
+
+**Rules**:
+- Each Bounded Context MUST be implemented as an independent module/crate with clear boundaries
+- Cross-context dependencies MUST occur only through explicit interfaces (APIs, events, Shared Kernel)
+- Each context MAY have its own database schema or table namespace within a shared database
+- Each context MUST have its own set of TUI screens and navigation flows
+- Domain models MUST NOT leak across context boundaries; translation layers MUST be used when data crosses contexts
+- New contexts MAY be added without modifying existing context implementations
+
+**Initial Contexts**:
+- **Asset Management**: Management of personal possessions (physical items, digital assets)
+- *(Future contexts will be defined as project evolves)*
+
+**Potential Future Contexts** (illustrative, not commitments):
+- Finance Management: Income, expenses, budgets, accounts
+- Health Management: Medical records, measurements, wellness tracking
+- Knowledge Management: Notes, research, learning materials
+- Time Management: Calendar, tasks, goals
+
+**Rationale**: As a personal information management tool, lazybook must handle diverse domains (assets, finances, health, schedules, etc.). Bounded Contexts enable:
+- **Domain Isolation**: Each domain's complexity is contained within its context
+- **Independent Evolution**: Contexts can be developed, tested, and deployed independently
+- **Clear Ownership**: Each context has well-defined responsibilities
+- **Scalable Complexity**: Adding new domains does not increase coupling or complicate existing domains
+- **Ubiquitous Language**: Each domain uses terminology natural to that domain without conflicts
 
 ## Technical Constraints
 
@@ -154,4 +183,4 @@ All feature work MUST verify compliance with this constitution at planning phase
 
 This constitution supersedes all other development practices and conventions. When conflicts arise between this constitution and other guidance, this constitution takes precedence. The constitution MUST be reviewed and amended as project needs evolve, with all changes propagated to dependent artifacts.
 
-**Version**: 0.2.0 | **Ratified**: 2026-01-24 | **Last Amended**: 2026-01-24
+**Version**: 0.3.0 | **Ratified**: 2026-01-24 | **Last Amended**: 2026-01-24
