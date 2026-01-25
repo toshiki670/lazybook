@@ -52,6 +52,8 @@
 - [X] T006 [P] Create module files: src/lib.rs, src/main.rs, src/asset_management/mod.rs, src/shared/mod.rs, and all nested mod.rs files per plan.md structure
 - [X] T007 [P] Create initial migration 001_initial_schema.sql in migrations/ with all 5 tables (assets, categories, asset_categories, asset_histories, change_histories, schema_version)
 - [X] T008 [P] Create seed migration 002_seed_categories.sql with initial category hierarchy (家電, 衣類, 書籍, その他)
+- [X] T008a [P] Run cargo fmt: `cargo fmt --all` to format all code
+- [X] T008b [P] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
 **Checkpoint**: Project structure complete, ready for foundational implementation
 
@@ -72,6 +74,8 @@
   - ⚠️ **TODO**: Add transaction management to apply_migration() - wrap SQL execution and schema_version record in transaction (rusqlite::Connection::transaction())
 - [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
 - [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
+- [X] T014a [P] Run cargo fmt: `cargo fmt --all` to format all code
+- [X] T014b [P] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -115,8 +119,10 @@
 
 **Integration**:
 - [X] T022 [S1] [US1] Wire up main.rs: initialize database, apply migrations, launch TUI app (FR-010, FR-011: データ永続化と起動時読み込み)
+- [X] T022a [S1] [US1] Run cargo fmt: `cargo fmt --all` to format all code
+- [X] T022b [S1] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
-**Checkpoint**: ✅ **DEMO** - `cargo run` → TUI起動 → 名前入力 → 保存 → 一覧画面に表示される（8タスク完了）
+**Checkpoint**: ✅ **DEMO** - `cargo run` → TUI起動 → 名前入力 → 保存 → 一覧画面に表示される（10タスク完了）
 
 ---
 
@@ -149,8 +155,10 @@
 **Presentation Layer**:
 - [ ] T032 [S2] [US1] Extend AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: add category multi-select widget, validation for at least one category
 - [ ] T033 [S2] [US1] Extend AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: add categories column, display all categories for each asset
+- [ ] T033a [S2] [US1] Run cargo fmt: `cargo fmt --all` to format all code
+- [ ] T033b [S2] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
-**Checkpoint**: ✅ **DEMO** - カテゴリ選択 → 保存 → 一覧にカテゴリ表示（11タスク累計19）
+**Checkpoint**: ✅ **DEMO** - カテゴリ選択 → 保存 → 一覧にカテゴリ表示（13タスク累計21）
 
 ---
 
@@ -179,8 +187,10 @@
 - [ ] T039 [S3] [US1] Implement FormComponent in src/asset_management/presentation/components/form.rs: reusable form widget (text input, number input, textarea)
 - [ ] T040 [S3] [US1] Extend AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: add manufacturer input, quantity input, memo textarea using FormComponent
 - [ ] T041 [S3] [US1] Extend AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: add manufacturer column, quantity column
+- [ ] T041a [S3] [US1] Run cargo fmt: `cargo fmt --all` to format all code
+- [ ] T041b [S3] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
-**Checkpoint**: ✅ **DEMO** - 全項目入力 → 保存 → 一覧に全情報表示（8タスク累計27）
+**Checkpoint**: ✅ **DEMO** - 全項目入力 → 保存 → 一覧に全情報表示（10タスク累計29）
 
 ---
 
@@ -205,8 +215,10 @@
 **Application Layer**:
 - [ ] T046 [S4] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: record ChangeHistory after create_asset() operation
   - ⚠️ **TODO**: Add transaction management - wrap Asset + AssetCategory + ChangeHistory operations in transaction (Transaction Boundary from data-model.md)
+- [ ] T046a [S4] [US1] Run cargo fmt: `cargo fmt --all` to format all code
+- [ ] T046b [S4] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
-**Checkpoint**: ✅ **DEMO** - 資産作成 → change_histories テーブルにレコード保存確認（4タスク累計31）
+**Checkpoint**: ✅ **DEMO** - 資産作成 → change_histories テーブルにレコード保存確認（6タスク累計33）
 
 **Phase 3 Complete**: User Story 1 fully implemented - user can create assets with all fields and change history tracking
 
@@ -759,7 +771,7 @@ Week 3-4: US4-10追加
 
 | Phase | User Story | Slices | Total Tasks | First Working Demo |
 |-------|-----------|--------|-------------|-------------------|
-| 3 | US1: Add New Asset | 4 slices | 31 tasks | After Slice 1.1 (8 tasks) |
+| 3 | US1: Add New Asset | 4 slices | 39 tasks | After Slice 1.1 (10 tasks) |
 | 4 | US2: View Asset List | 3 slices | 17 tasks | Already working from US1 |
 | 5 | US3: View Asset Details | 2 slices | 9 tasks | After Slice 3.1 (3 tasks) |
 | 6 | US4: Edit Asset | 1 slice | 8 tasks | After slice (8 tasks) |
@@ -770,9 +782,11 @@ Week 3-4: US4-10追加
 | 11 | US9: Manage Category Hierarchy | 2 slices | 14 tasks | After Slice 9.1 (9 tasks) |
 | 12 | US10: Filter by Hierarchy | 2 slices | 7 tasks | After Slice 10.1 (4 tasks) |
 | 13 | Polish | - | 16 tasks | - |
-| **Total** | **10 User Stories** | **20 Slices** | **149 tasks** | **9 demo points** |
+| **Total** | **10 User Stories** | **20 Slices** | **157 tasks** | **9 demo points** |
 
-**Key Achievement**: First working demo after only **8 tasks** (Setup + Foundational + Slice 1.1)
+**Key Achievement**: First working demo after only **10 tasks** (Setup + Foundational + Slice 1.1 + quality checks)
+
+**Note**: Each slice includes `cargo fmt` and `cargo clippy` tasks for code quality assurance.
 
 ---
 
@@ -794,9 +808,10 @@ For EVERY slice:
 
 3. **REFACTOR**: Clean up, optimize, extract patterns
    ```bash
-   cargo clippy -- -D warnings
-   cargo fmt
-   cargo test
+   # Code quality checks (required after each slice)
+   cargo fmt --all                    # Format all code
+   cargo clippy -- -D warnings        # Check code quality (warnings as errors)
+   cargo test                         # Run tests
    ```
 
 4. **DEMO**: Run application and verify slice works end-to-end
@@ -815,3 +830,18 @@ For EVERY slice:
 - Prefer small, frequent demos over big-bang integration
 - Stop at any checkpoint to validate slice independently
 - Commit after each slice completion for clean git history
+
+## Code Quality Workflow
+
+**After each slice implementation**:
+1. Run `cargo fmt --all` to format all code
+2. Run `cargo clippy -- -D warnings` to check code quality (warnings as errors)
+3. Fix any warnings or formatting issues
+4. Run `cargo test` to ensure all tests pass
+5. Commit changes
+
+**Quality checks are included as tasks** at key milestones:
+- Phase 1 completion (T008a, T008b)
+- Phase 2 completion (T014a, T014b)
+- Each slice completion (T022a/b, T033a/b, T041a/b, T046a/b)
+- Final polish phase (T147, T148)
