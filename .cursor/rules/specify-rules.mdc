@@ -1,0 +1,29 @@
+# lazybook Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-01-25
+
+## Active Technologies
+
+- Rust (stable toolchain - 1.75 or later) (001-asset-management)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cargo test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] cargo clippy
+
+## Code Style
+
+Rust (stable toolchain - 1.75 or later): Follow standard conventions
+
+## Recent Changes
+
+- 001-asset-management: Added Rust (stable toolchain - 1.75 or later)
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->
