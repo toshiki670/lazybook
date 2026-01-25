@@ -44,7 +44,10 @@ impl<R: AssetRepository> App<R> {
     }
 
     /// Run the application
-    pub fn run<B: Backend>(&mut self, terminal: &mut Terminal<B>) -> Result<()> {
+    pub fn run<B: Backend>(&mut self, terminal: &mut Terminal<B>) -> Result<()>
+    where
+        <B as Backend>::Error: Send + Sync + 'static,
+    {
         // Load initial data
         self.refresh_assets()?;
 
@@ -80,7 +83,7 @@ impl<R: AssetRepository> App<R> {
 
     /// Render asset list screen
     fn render_asset_list(&self, f: &mut Frame) {
-        let size = f.size();
+        let size = f.area();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -131,7 +134,7 @@ impl<R: AssetRepository> App<R> {
 
     /// Render asset form screen
     fn render_asset_form(&self, f: &mut Frame) {
-        let size = f.size();
+        let size = f.area();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
