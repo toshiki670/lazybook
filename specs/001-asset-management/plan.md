@@ -148,88 +148,140 @@ specs/001-asset-management/
 
 ### Source Code (repository root)
 
+**Option A: Bounded Context を最上位に配置**
+
 ```text
 src/
-├── main.rs              # Entry point, CLI setup
-├── lib.rs               # Library root
+├── main.rs              # Entry point, CLI setup, context routing
+├── lib.rs               # Library root, shared utilities
 │
-├── domain/              # Domain layer (pure business logic)
-│   ├── mod.rs
-│   ├── asset/           # Asset aggregate
+├── asset_management/    # Asset Management Bounded Context
+│   ├── mod.rs           # Context public interface
+│   │
+│   ├── domain/          # Domain layer (pure business logic)
 │   │   ├── mod.rs
-│   │   ├── entity.rs    # Asset entity
-│   │   ├── value_objects.rs  # Price, Duration, etc.
-│   │   └── repository.rs     # Asset repository trait
-│   ├── category/        # Category aggregate
+│   │   ├── asset/       # Asset aggregate
+│   │   │   ├── mod.rs
+│   │   │   ├── entity.rs    # Asset entity
+│   │   │   ├── value_objects.rs  # Price, Duration, etc.
+│   │   │   └── repository.rs     # Asset repository trait
+│   │   ├── category/    # Category aggregate
+│   │   │   ├── mod.rs
+│   │   │   ├── entity.rs    # Category entity, hierarchy logic
+│   │   │   └── repository.rs
+│   │   ├── history/     # History aggregates
+│   │   │   ├── mod.rs
+│   │   │   ├── asset_history.rs    # AssetHistory entity
+│   │   │   ├── change_history.rs   # ChangeHistory entity
+│   │   │   └── repository.rs
+│   │   └── shared/      # Shared domain concepts (within context)
+│   │       ├── mod.rs
+│   │       └── types.rs # Common value objects
+│   │
+│   ├── application/     # Application services (use cases)
 │   │   ├── mod.rs
-│   │   ├── entity.rs    # Category entity, hierarchy logic
-│   │   └── repository.rs
-│   ├── history/         # History aggregates
+│   │   ├── asset_service.rs      # Asset CRUD, lifecycle
+│   │   ├── category_service.rs   # Category management
+│   │   ├── history_service.rs    # History query, export
+│   │   └── dto.rs                # Data transfer objects
+│   │
+│   ├── infrastructure/  # Infrastructure layer
 │   │   ├── mod.rs
-│   │   ├── asset_history.rs    # AssetHistory entity
-│   │   ├── change_history.rs   # ChangeHistory entity
-│   │   └── repository.rs
-│   └── shared/          # Shared domain concepts
+│   │   ├── persistence/ # SQLite implementation
+│   │   │   ├── mod.rs
+│   │   │   ├── schema.rs    # Table definitions
+│   │   │   ├── asset_repository.rs
+│   │   │   ├── category_repository.rs
+│   │   │   ├── history_repository.rs
+│   │   │   └── migrations.rs
+│   │   └── export/      # Markdown exporter
+│   │       ├── mod.rs
+│   │       └── markdown.rs
+│   │
+│   └── presentation/    # TUI layer
 │       ├── mod.rs
-│       └── types.rs     # Common value objects
+│       ├── app.rs       # App state, event loop
+│       ├── events.rs    # Event abstraction (keyboard + future mouse)
+│       ├── screens/     # Screen components
+│       │   ├── mod.rs
+│       │   ├── asset_list.rs
+│       │   ├── asset_detail.rs
+│       │   ├── asset_form.rs
+│       │   ├── category_tree.rs
+│       │   ├── history_view.rs
+│       │   └── help.rs
+│       ├── components/  # Reusable TUI widgets
+│       │   ├── mod.rs
+│       │   ├── table.rs
+│       │   ├── form.rs
+│       │   ├── tree.rs
+│       │   └── dialog.rs
+│       └── navigation.rs # Navigation state machine
 │
-├── application/         # Application services (use cases)
+├── shared/              # Cross-Context shared kernel (if needed)
 │   ├── mod.rs
-│   ├── asset_service.rs      # Asset CRUD, lifecycle
-│   ├── category_service.rs   # Category management
-│   ├── history_service.rs    # History query, export
-│   └── dto.rs                # Data transfer objects
-│
-├── infrastructure/      # Infrastructure layer
-│   ├── mod.rs
-│   ├── persistence/     # SQLite implementation
+│   ├── logging/         # Shared logging infrastructure
 │   │   ├── mod.rs
-│   │   ├── schema.rs    # Table definitions
-│   │   ├── asset_repository.rs
-│   │   ├── category_repository.rs
-│   │   ├── history_repository.rs
-│   │   └── migrations.rs
-│   ├── export/          # Markdown exporter
-│   │   ├── mod.rs
-│   │   └── markdown.rs
-│   └── logging/         # Operation logging
-│       ├── mod.rs
-│       └── logger.rs
+│   │   └── logger.rs
+│   └── types.rs         # Common types across all contexts
 │
-└── presentation/        # TUI layer
-    ├── mod.rs
-    ├── app.rs           # App state, event loop
-    ├── screens/         # Screen components
-    │   ├── mod.rs
-    │   ├── asset_list.rs
-    │   ├── asset_detail.rs
-    │   ├── asset_form.rs
-    │   ├── category_tree.rs
-    │   ├── history_view.rs
-    │   └── help.rs
-    ├── components/      # Reusable TUI widgets
-    │   ├── mod.rs
-    │   ├── table.rs
-    │   ├── form.rs
-    │   ├── tree.rs
-    │   └── dialog.rs
-    └── navigation.rs    # Navigation state machine
+└── future_contexts/     # Placeholder for future bounded contexts
+    ├── finance_management/  # Example: Future context
+    └── knowledge_management/ # Example: Future context
 
 tests/
-├── unit/                # Unit tests (per module)
-│   ├── domain/
-│   ├── application/
-│   └── infrastructure/
-├── integration/         # Cross-layer integration tests
-│   ├── asset_lifecycle_test.rs
-│   ├── category_hierarchy_test.rs
-│   └── history_tracking_test.rs
-└── contract/            # TUI component contract tests
-    ├── asset_list_test.rs
-    └── category_tree_test.rs
+├── asset_management/    # Asset Management context tests
+│   ├── unit/            # Unit tests (per module)
+│   │   ├── domain/
+│   │   ├── application/
+│   │   └── infrastructure/
+│   ├── integration/     # Cross-layer integration tests
+│   │   ├── asset_lifecycle_test.rs
+│   │   ├── category_hierarchy_test.rs
+│   │   └── history_tracking_test.rs
+│   └── contract/        # TUI component contract tests
+│       ├── asset_list_test.rs
+│       └── category_tree_test.rs
+│
+└── integration_cross_context/  # Future: Cross-context integration tests
 ```
 
-**Structure Decision**: Single Rust project (Option 1) selected. This is a standalone TUI application without separate frontend/backend concerns. Domain-Driven Design layering (domain → application → infrastructure → presentation) is enforced through module structure. The Asset Management Bounded Context is implemented within the `src/` directory structure. Future Bounded Contexts (e.g., Finance Management) will be added as peer modules under `src/` or as separate crates if isolation requirements increase.
+**Structure Decision**: Option A（Bounded Context最上位）を採用。Constitution Principle VIII（Bounded Context Architecture）に基づき、各Bounded Contextを最上位モジュールとして独立させる。
+
+**理由**:
+- ✅ **Context境界の明確化**: `src/asset_management/` で物理的に分離
+- ✅ **スケーラビリティ**: 将来の `finance_management`, `knowledge_management` を並列追加可能
+- ✅ **独立開発**: 各Contextが独自のdomain/application/infrastructure/presentationを持つ
+- ✅ **依存関係の可視化**: Context間の依存は `mod.rs` のpub use で明示
+- ✅ **テスト分離**: `tests/asset_management/` でContext単位のテスト管理
+
+**Context間の通信**（将来）:
+- Shared Kernel: `src/shared/` で最小限の共通機能（logging, 共通型）
+- Context間統合: イベント駆動またはApplication Service経由
+- 明示的依存: `src/asset_management/mod.rs` で他Contextへの依存を宣言
+
+**main.rs の役割**:
+```rust
+// Context routing
+mod asset_management;
+mod shared;
+
+fn main() -> Result<()> {
+    // Initialize shared infrastructure
+    shared::logging::init()?;
+    
+    // Launch Asset Management context
+    asset_management::presentation::run()?;
+    
+    // Future: Context selection menu
+    // match select_context() {
+    //     Context::AssetManagement => asset_management::run()?,
+    //     Context::FinanceManagement => finance_management::run()?,
+    // }
+    
+    Ok(())
+}
+```
 
 ## Complexity Tracking
 

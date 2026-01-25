@@ -15,8 +15,11 @@
 
 ## Path Conventions
 
-- **Single Rust project**: `src/`, `tests/` at repository root
-- Paths follow plan.md structure (Domain → Application → Infrastructure → Presentation layers)
+- **Bounded Context最上位**: `src/asset_management/` (Asset Management context)
+- **DDD 4層構造**: `{domain,application,infrastructure,presentation}` under each context
+- **Shared kernel**: `src/shared/` (cross-context shared utilities)
+- **Tests**: `tests/asset_management/{unit,integration,contract}`
+- Future contexts: `src/finance_management/`, `src/knowledge_management/`, etc.
 
 ---
 
@@ -28,8 +31,8 @@
 - [ ] T002 [P] Add dependencies to Cargo.toml: ratatui@0.25, crossterm@0.27, rusqlite (bundled), clap (derive), thiserror, anyhow, chrono, log, env_logger, serde, serde_json
 - [ ] T003 [P] Configure clippy and rustfmt settings in rustfmt.toml and clippy.toml
 - [ ] T004 [P] Setup mise configuration in .mise.toml for Rust stable toolchain
-- [ ] T005 Create directory structure: src/{domain,application,infrastructure,presentation}, tests/{unit,integration,contract}, migrations/
-- [ ] T006 [P] Create module files: src/lib.rs, src/main.rs, and all mod.rs files per plan.md structure
+- [ ] T005 Create directory structure: src/{asset_management/{domain,application,infrastructure,presentation},shared}, tests/asset_management/{unit,integration,contract}, migrations/
+- [ ] T006 [P] Create module files: src/lib.rs, src/main.rs, src/asset_management/mod.rs, src/shared/mod.rs, and all nested mod.rs files per plan.md structure
 - [ ] T007 [P] Create initial migration 001_initial_schema.sql in migrations/ with all 5 tables (assets, categories, asset_categories, asset_histories, change_histories, schema_version)
 - [ ] T008 [P] Create seed migration 002_seed_categories.sql with initial category hierarchy (家電, 衣類, 書籍, その他)
 
@@ -43,12 +46,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 Implement Error types in src/domain/shared/types.rs: AssetError, CategoryError, PriceError using thiserror
-- [ ] T010 [P] Implement Value Objects in src/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
-- [ ] T011 [P] Setup logging infrastructure in src/infrastructure/logging/logger.rs using log + env_logger
-- [ ] T012 [P] Implement database migration system in src/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
-- [ ] T013 Implement database connection manager in src/infrastructure/persistence/mod.rs: establish_connection(), initialize_database()
-- [ ] T014 [P] Create Repository traits in src/domain/asset/repository.rs, src/domain/category/repository.rs, src/domain/history/repository.rs (interfaces only, no implementation)
+- [ ] T009 Implement Error types in src/asset_management/domain/shared/types.rs: AssetError, CategoryError, PriceError using thiserror
+- [ ] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
+- [ ] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
+- [ ] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
+- [ ] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database()
+- [ ] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs, src/asset_management/domain/history/repository.rs (interfaces only, no implementation)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -65,24 +68,24 @@
 
 ### Tests for User Story 1 (TDD - Write FIRST, ensure FAIL)
 
-- [ ] T015 [P] [US1] Unit test: Asset entity creation in tests/unit/domain/asset_entity_test.rs - test_create_asset_with_valid_data(), test_asset_requires_name(), test_quantity_must_be_non_negative()
-- [ ] T016 [P] [US1] Unit test: AssetService::create_asset() in tests/unit/application/asset_service_test.rs - test_create_asset_records_change_history()
-- [ ] T017 [P] [US1] Integration test: Asset persistence in tests/integration/asset_lifecycle_test.rs - test_asset_creation_and_retrieval()
+- [ ] T015 [P] [US1] Unit test: Asset entity creation in tests/asset_management/unit/domain/asset_entity_test.rs - test_create_asset_with_valid_data(), test_asset_requires_name(), test_quantity_must_be_non_negative()
+- [ ] T016 [P] [US1] Unit test: AssetService::create_asset() in tests/asset_management/unit/application/asset_service_test.rs - test_create_asset_records_change_history()
+- [ ] T017 [P] [US1] Integration test: Asset persistence in tests/asset_management/integration/asset_lifecycle_test.rs - test_asset_creation_and_retrieval()
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Implement Asset entity in src/domain/asset/entity.rs: Asset struct, new(), update_name(), update_quantity(), validate()
-- [ ] T019 [P] [US1] Implement Category entity in src/domain/category/entity.rs: Category struct, new(), set_parent(), validate_no_cycle()
-- [ ] T020 [P] [US1] Implement AssetCategory entity in src/domain/asset/entity.rs (same file): AssetCategory struct, new()
-- [ ] T021 [P] [US1] Implement ChangeHistory entity in src/domain/history/change_history.rs: ChangeHistory struct, record_create(), record_update(), to_json()
-- [ ] T022 [US1] Implement SqliteAssetRepository in src/infrastructure/persistence/asset_repository.rs: save(), find(), find_all() (depends on T018)
-- [ ] T023 [P] [US1] Implement SqliteCategoryRepository in src/infrastructure/persistence/category_repository.rs: save(), find(), find_all(), find_roots()
-- [ ] T024 [US1] Implement SqliteChangeHistoryRepository in src/infrastructure/persistence/history_repository.rs: save(), find_by_asset() (depends on T021)
-- [ ] T025 [US1] Implement AssetService in src/application/asset_service.rs: create_asset() with ChangeHistory recording (depends on T022, T024)
-- [ ] T026 [US1] Implement AssetDto in src/application/dto.rs: AssetDto, CategoryDto conversion from domain entities
-- [ ] T027 [US1] Implement AssetFormScreen (New mode) in src/presentation/screens/asset_form.rs: render(), handle_input(), validate_form(), save_asset()
-- [ ] T028 [US1] Implement FormComponent in src/presentation/components/form.rs: reusable form widget with field validation
-- [ ] T029 [US1] Implement App state machine in src/presentation/app.rs: Screen enum, transition_to(), handle_key_event()
+- [ ] T018 [P] [US1] Implement Asset entity in src/asset_management/domain/asset/entity.rs: Asset struct, new(), update_name(), update_quantity(), validate()
+- [ ] T019 [P] [US1] Implement Category entity in src/asset_management/domain/category/entity.rs: Category struct, new(), set_parent(), validate_no_cycle()
+- [ ] T020 [P] [US1] Implement AssetCategory entity in src/asset_management/domain/asset/entity.rs (same file): AssetCategory struct, new()
+- [ ] T021 [P] [US1] Implement ChangeHistory entity in src/asset_management/domain/history/change_history.rs: ChangeHistory struct, record_create(), record_update(), to_json()
+- [ ] T022 [US1] Implement SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save(), find(), find_all() (depends on T018)
+- [ ] T023 [P] [US1] Implement SqliteCategoryRepository in src/asset_management/infrastructure/persistence/category_repository.rs: save(), find(), find_all(), find_roots()
+- [ ] T024 [US1] Implement SqliteChangeHistoryRepository in src/asset_management/infrastructure/persistence/history_repository.rs: save(), find_by_asset() (depends on T021)
+- [ ] T025 [US1] Implement AssetService in src/asset_management/application/asset_service.rs: create_asset() with ChangeHistory recording (depends on T022, T024)
+- [ ] T026 [US1] Implement AssetDto in src/asset_management/application/dto.rs: AssetDto, CategoryDto conversion from domain entities
+- [ ] T027 [US1] Implement AssetFormScreen (New mode) in src/asset_management/presentation/screens/asset_form.rs: render(), handle_input(), validate_form(), save_asset()
+- [ ] T028 [US1] Implement FormComponent in src/asset_management/presentation/components/form.rs: reusable form widget with field validation
+- [ ] T029 [US1] Implement App state machine in src/asset_management/presentation/app.rs: Screen enum, transition_to(), handle_key_event()
 - [ ] T030 [US1] Update main.rs to initialize database, apply migrations, and launch TUI app
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can create assets via TUI
@@ -100,19 +103,19 @@
 
 ### Tests for User Story 2 (TDD)
 
-- [ ] T031 [P] [US2] Unit test: Asset filtering logic in tests/unit/application/asset_service_test.rs - test_filter_by_category(), test_filter_by_manufacturer()
-- [ ] T032 [P] [US2] Integration test: Asset list query performance in tests/integration/asset_query_test.rs - test_list_100_assets_under_1_second()
-- [ ] T033 [P] [US2] Contract test: AssetListScreen rendering in tests/contract/asset_list_screen_test.rs - test_renders_asset_table(), test_highlights_selected_row()
+- [ ] T031 [P] [US2] Unit test: Asset filtering logic in tests/asset_management/unit/application/asset_service_test.rs - test_filter_by_category(), test_filter_by_manufacturer()
+- [ ] T032 [P] [US2] Integration test: Asset list query performance in tests/asset_management/integration/asset_query_test.rs - test_list_100_assets_under_1_second()
+- [ ] T033 [P] [US2] Contract test: AssetListScreen rendering in tests/asset_management/contract/asset_list_screen_test.rs - test_renders_asset_table(), test_highlights_selected_row()
 
 ### Implementation for User Story 2
 
-- [ ] T034 [P] [US2] Add query methods to AssetRepository trait in src/domain/asset/repository.rs: find_by_category(), find_by_manufacturer(), count()
-- [ ] T035 [US2] Implement query methods in SqliteAssetRepository in src/infrastructure/persistence/asset_repository.rs (depends on T034)
-- [ ] T036 [P] [US2] Implement AssetService query methods in src/application/asset_service.rs: list_assets(), filter_by_category(), sort_by_field()
-- [ ] T037 [P] [US2] Implement OwnershipDurationService in src/domain/shared/services.rs: calculate_duration() using AssetHistoryRepository
-- [ ] T038 [US2] Implement AssetListScreen in src/presentation/screens/asset_list.rs: render(), handle_key_events(), apply_filter(), apply_sort() (depends on T036)
-- [ ] T039 [P] [US2] Implement TableComponent in src/presentation/components/table.rs: reusable table widget with column定義, scroll, highlight
-- [ ] T040 [US2] Add AssetListScreen to App state machine in src/presentation/app.rs (depends on T038)
+- [ ] T034 [P] [US2] Add query methods to AssetRepository trait in src/asset_management/domain/asset/repository.rs: find_by_category(), find_by_manufacturer(), count()
+- [ ] T035 [US2] Implement query methods in SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs (depends on T034)
+- [ ] T036 [P] [US2] Implement AssetService query methods in src/asset_management/application/asset_service.rs: list_assets(), filter_by_category(), sort_by_field()
+- [ ] T037 [P] [US2] Implement OwnershipDurationService in src/asset_management/domain/shared/services.rs: calculate_duration() using AssetHistoryRepository
+- [ ] T038 [US2] Implement AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: render(), handle_key_events(), apply_filter(), apply_sort() (depends on T036)
+- [ ] T039 [P] [US2] Implement TableComponent in src/asset_management/presentation/components/table.rs: reusable table widget with column定義, scroll, highlight
+- [ ] T040 [US2] Add AssetListScreen to App state machine in src/asset_management/presentation/app.rs (depends on T038)
 
 **Checkpoint**: User can now view asset list with filtering/sorting (US1 + US2 both functional)
 
@@ -129,14 +132,14 @@
 
 ### Tests for User Story 3 (TDD)
 
-- [ ] T041 [P] [US3] Contract test: AssetDetailScreen rendering in tests/contract/asset_detail_screen_test.rs - test_displays_all_asset_info(), test_displays_history_events()
+- [ ] T041 [P] [US3] Contract test: AssetDetailScreen rendering in tests/asset_management/contract/asset_detail_screen_test.rs - test_displays_all_asset_info(), test_displays_history_events()
 
 ### Implementation for User Story 3
 
-- [ ] T042 [P] [US3] Add AssetHistoryDto, ChangeHistoryDto to src/application/dto.rs
-- [ ] T043 [US3] Extend AssetService in src/application/asset_service.rs: get_asset_detail() with histories (depends on T042)
-- [ ] T044 [US3] Implement AssetDetailScreen in src/presentation/screens/asset_detail.rs: render(), handle_tab_switch(), display_histories()
-- [ ] T045 [US3] Add AssetDetailScreen to App state machine transitions in src/presentation/app.rs
+- [ ] T042 [P] [US3] Add AssetHistoryDto, ChangeHistoryDto to src/asset_management/application/dto.rs
+- [ ] T043 [US3] Extend AssetService in src/asset_management/application/asset_service.rs: get_asset_detail() with histories (depends on T042)
+- [ ] T044 [US3] Implement AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs: render(), handle_tab_switch(), display_histories()
+- [ ] T045 [US3] Add AssetDetailScreen to App state machine transitions in src/asset_management/presentation/app.rs
 
 **Checkpoint**: User can now view detailed asset information (US1-3 all functional)
 
@@ -153,17 +156,17 @@
 
 ### Tests for User Story 4 (TDD)
 
-- [ ] T046 [P] [US4] Unit test: Asset entity update methods in tests/unit/domain/asset_entity_test.rs - test_update_name(), test_update_manufacturer()
-- [ ] T047 [P] [US4] Unit test: AssetService::update_asset() in tests/unit/application/asset_service_test.rs - test_update_records_change_history()
+- [ ] T046 [P] [US4] Unit test: Asset entity update methods in tests/asset_management/unit/domain/asset_entity_test.rs - test_update_name(), test_update_manufacturer()
+- [ ] T047 [P] [US4] Unit test: AssetService::update_asset() in tests/asset_management/unit/application/asset_service_test.rs - test_update_records_change_history()
 
 ### Implementation for User Story 4
 
-- [ ] T048 [P] [US4] Add update methods to Asset entity in src/domain/asset/entity.rs: update_manufacturer(), update_memo()
-- [ ] T049 [P] [US4] Add update methods to AssetRepository trait in src/domain/asset/repository.rs: update()
-- [ ] T050 [US4] Implement update() in SqliteAssetRepository in src/infrastructure/persistence/asset_repository.rs (depends on T049)
-- [ ] T051 [US4] Implement AssetService::update_asset() in src/application/asset_service.rs with ChangeHistory recording (depends on T048, T050)
-- [ ] T052 [US4] Implement AssetFormScreen (Edit mode) in src/presentation/screens/asset_form.rs: load_existing_asset(), update_asset()
-- [ ] T053 [US4] Add edit transition from AssetDetailScreen in src/presentation/screens/asset_detail.rs
+- [ ] T048 [P] [US4] Add update methods to Asset entity in src/asset_management/domain/asset/entity.rs: update_manufacturer(), update_memo()
+- [ ] T049 [P] [US4] Add update methods to AssetRepository trait in src/asset_management/domain/asset/repository.rs: update()
+- [ ] T050 [US4] Implement update() in SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs (depends on T049)
+- [ ] T051 [US4] Implement AssetService::update_asset() in src/asset_management/application/asset_service.rs with ChangeHistory recording (depends on T048, T050)
+- [ ] T052 [US4] Implement AssetFormScreen (Edit mode) in src/asset_management/presentation/screens/asset_form.rs: load_existing_asset(), update_asset()
+- [ ] T053 [US4] Add edit transition from AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs
 
 **Checkpoint**: User can now edit existing assets (US1-4 all functional)
 
@@ -180,15 +183,15 @@
 
 ### Tests for User Story 5 (TDD)
 
-- [ ] T054 [P] [US5] Unit test: AssetService::delete_asset() in tests/unit/application/asset_service_test.rs - test_delete_records_change_history(), test_delete_removes_from_repository()
+- [ ] T054 [P] [US5] Unit test: AssetService::delete_asset() in tests/asset_management/unit/application/asset_service_test.rs - test_delete_records_change_history(), test_delete_removes_from_repository()
 
 ### Implementation for User Story 5
 
-- [ ] T055 [P] [US5] Add delete() to AssetRepository trait in src/domain/asset/repository.rs
-- [ ] T056 [US5] Implement delete() in SqliteAssetRepository in src/infrastructure/persistence/asset_repository.rs with CASCADE handling (depends on T055)
-- [ ] T057 [US5] Implement AssetService::delete_asset() in src/application/asset_service.rs with ChangeHistory recording (depends on T056)
-- [ ] T058 [P] [US5] Implement DialogComponent in src/presentation/components/dialog.rs: confirmation dialog widget
-- [ ] T059 [US5] Add delete action to AssetDetailScreen/AssetListScreen in src/presentation/screens/ with confirmation dialog (depends on T058)
+- [ ] T055 [P] [US5] Add delete() to AssetRepository trait in src/asset_management/domain/asset/repository.rs
+- [ ] T056 [US5] Implement delete() in SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs with CASCADE handling (depends on T055)
+- [ ] T057 [US5] Implement AssetService::delete_asset() in src/asset_management/application/asset_service.rs with ChangeHistory recording (depends on T056)
+- [ ] T058 [P] [US5] Implement DialogComponent in src/asset_management/presentation/components/dialog.rs: confirmation dialog widget
+- [ ] T059 [US5] Add delete action to AssetDetailScreen/AssetListScreen in src/asset_management/presentation/screens/ with confirmation dialog (depends on T058)
 
 **Checkpoint**: User can now delete assets with confirmation (US1-5 all functional)
 
@@ -205,17 +208,17 @@
 
 ### Tests for User Story 6 (TDD)
 
-- [ ] T060 [P] [US6] Unit test: AssetHistory entity in tests/unit/domain/asset_history_test.rs - test_record_acquisition(), test_record_disposal_with_price()
-- [ ] T061 [P] [US6] Integration test: History persistence in tests/integration/asset_history_test.rs - test_multiple_acquisitions_tracked_separately()
+- [ ] T060 [P] [US6] Unit test: AssetHistory entity in tests/asset_management/unit/domain/asset_history_test.rs - test_record_acquisition(), test_record_disposal_with_price()
+- [ ] T061 [P] [US6] Integration test: History persistence in tests/asset_management/integration/asset_history_test.rs - test_multiple_acquisitions_tracked_separately()
 
 ### Implementation for User Story 6
 
-- [ ] T062 [P] [US6] Implement AssetHistory entity in src/domain/history/asset_history.rs: AssetHistory struct, HistoryType enum, record_acquisition(), record_disposal(), record_damage()
-- [ ] T063 [P] [US6] Implement AssetHistoryRepository trait in src/domain/history/repository.rs: save(), find_by_asset(), find_first_acquisition(), find_last_disposal()
-- [ ] T064 [US6] Implement SqliteAssetHistoryRepository in src/infrastructure/persistence/history_repository.rs (depends on T063)
-- [ ] T065 [US6] Implement HistoryService in src/application/history_service.rs: record_acquisition(), record_disposal(), get_asset_histories() (depends on T064)
-- [ ] T066 [US6] Implement HistoryFormScreen in src/presentation/screens/history_form.rs: render(), handle_input(), save_history()
-- [ ] T067 [US6] Add history recording action to AssetDetailScreen in src/presentation/screens/asset_detail.rs
+- [ ] T062 [P] [US6] Implement AssetHistory entity in src/asset_management/domain/history/asset_history.rs: AssetHistory struct, HistoryType enum, record_acquisition(), record_disposal(), record_damage()
+- [ ] T063 [P] [US6] Implement AssetHistoryRepository trait in src/asset_management/domain/history/repository.rs: save(), find_by_asset(), find_first_acquisition(), find_last_disposal()
+- [ ] T064 [US6] Implement SqliteAssetHistoryRepository in src/asset_management/infrastructure/persistence/history_repository.rs (depends on T063)
+- [ ] T065 [US6] Implement HistoryService in src/asset_management/application/history_service.rs: record_acquisition(), record_disposal(), get_asset_histories() (depends on T064)
+- [ ] T066 [US6] Implement HistoryFormScreen in src/asset_management/presentation/screens/history_form.rs: render(), handle_input(), save_history()
+- [ ] T067 [US6] Add history recording action to AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs
 
 **Checkpoint**: User can now record and view asset history events (US1-6 all functional)
 
@@ -232,15 +235,15 @@
 
 ### Tests for User Story 7 (TDD)
 
-- [ ] T068 [P] [US7] Unit test: ChangeHistory filtering in tests/unit/application/history_service_test.rs - test_filter_by_date_range(), test_filter_by_operation_type()
+- [ ] T068 [P] [US7] Unit test: ChangeHistory filtering in tests/asset_management/unit/application/history_service_test.rs - test_filter_by_date_range(), test_filter_by_operation_type()
 
 ### Implementation for User Story 7
 
-- [ ] T069 [P] [US7] Add filtering methods to ChangeHistoryRepository trait in src/domain/history/repository.rs: find_by_date_range(), find_by_operation_type()
-- [ ] T070 [US7] Implement filtering in SqliteChangeHistoryRepository in src/infrastructure/persistence/history_repository.rs (depends on T069)
-- [ ] T071 [US7] Extend HistoryService in src/application/history_service.rs: get_change_histories(), filter_changes()
-- [ ] T072 [US7] Add ChangeHistory display tab to AssetDetailScreen in src/presentation/screens/asset_detail.rs
-- [ ] T073 [P] [US7] Implement HistoryViewScreen (optional separate screen) in src/presentation/screens/history_view.rs if needed
+- [ ] T069 [P] [US7] Add filtering methods to ChangeHistoryRepository trait in src/asset_management/domain/history/repository.rs: find_by_date_range(), find_by_operation_type()
+- [ ] T070 [US7] Implement filtering in SqliteChangeHistoryRepository in src/asset_management/infrastructure/persistence/history_repository.rs (depends on T069)
+- [ ] T071 [US7] Extend HistoryService in src/asset_management/application/history_service.rs: get_change_histories(), filter_changes()
+- [ ] T072 [US7] Add ChangeHistory display tab to AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs
+- [ ] T073 [P] [US7] Implement HistoryViewScreen (optional separate screen) in src/asset_management/presentation/screens/history_view.rs if needed
 
 **Checkpoint**: User can now view complete change history (US1-7 all functional)
 
@@ -257,14 +260,14 @@
 
 ### Tests for User Story 8 (TDD)
 
-- [ ] T074 [P] [US8] Unit test: Duration calculation in tests/unit/domain/services_test.rs - test_duration_for_active_asset(), test_duration_for_disposed_asset()
+- [ ] T074 [P] [US8] Unit test: Duration calculation in tests/asset_management/unit/domain/services_test.rs - test_duration_for_active_asset(), test_duration_for_disposed_asset()
 
 ### Implementation for User Story 8
 
-- [ ] T075 [US8] Implement Duration value object in src/domain/shared/types.rs: Duration struct, between(), from_now(), days() (may already exist from T010)
-- [ ] T076 [US8] Enhance OwnershipDurationService in src/domain/shared/services.rs: calculate_duration() using first acquisition and last disposal (depends on T037, T075)
-- [ ] T077 [US8] Display ownership duration in AssetListScreen in src/presentation/screens/asset_list.rs (add column)
-- [ ] T078 [US8] Display ownership duration in AssetDetailScreen in src/presentation/screens/asset_detail.rs
+- [ ] T075 [US8] Implement Duration value object in src/asset_management/domain/shared/types.rs: Duration struct, between(), from_now(), days() (may already exist from T010)
+- [ ] T076 [US8] Enhance OwnershipDurationService in src/asset_management/domain/shared/services.rs: calculate_duration() using first acquisition and last disposal (depends on T037, T075)
+- [ ] T077 [US8] Display ownership duration in AssetListScreen in src/asset_management/presentation/screens/asset_list.rs (add column)
+- [ ] T078 [US8] Display ownership duration in AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs
 
 **Checkpoint**: Ownership duration is now calculated and displayed (US1-8 all functional)
 
@@ -281,19 +284,19 @@
 
 ### Tests for User Story 9 (TDD)
 
-- [ ] T079 [P] [US9] Unit test: Category hierarchy methods in tests/unit/domain/category_entity_test.rs - test_ancestors(), test_descendants(), test_is_ancestor_of()
-- [ ] T080 [P] [US9] Unit test: Cycle detection in tests/unit/domain/category_entity_test.rs - test_validate_no_cycle()
-- [ ] T081 [P] [US9] Integration test: Hierarchy queries in tests/integration/category_hierarchy_test.rs - test_recursive_cte_ancestors(), test_recursive_cte_descendants()
+- [ ] T079 [P] [US9] Unit test: Category hierarchy methods in tests/asset_management/unit/domain/category_entity_test.rs - test_ancestors(), test_descendants(), test_is_ancestor_of()
+- [ ] T080 [P] [US9] Unit test: Cycle detection in tests/asset_management/unit/domain/category_entity_test.rs - test_validate_no_cycle()
+- [ ] T081 [P] [US9] Integration test: Hierarchy queries in tests/asset_management/integration/category_hierarchy_test.rs - test_recursive_cte_ancestors(), test_recursive_cte_descendants()
 
 ### Implementation for User Story 9
 
-- [ ] T082 [P] [US9] Implement hierarchy query methods in CategoryRepository trait in src/domain/category/repository.rs: find_ancestors(), find_descendants(), find_children(), has_children(), has_assets()
-- [ ] T083 [US9] Implement hierarchy queries in SqliteCategoryRepository in src/infrastructure/persistence/category_repository.rs using recursive CTEs (depends on T082)
-- [ ] T084 [P] [US9] Implement CategoryHierarchyService in src/domain/shared/services.rs: validate_no_cycle(), get_breadcrumb()
-- [ ] T085 [US9] Implement CategoryService in src/application/category_service.rs: create_category(), update_category(), delete_category() with validation (depends on T084)
-- [ ] T086 [US9] Implement CategoryTreeScreen in src/presentation/screens/category_tree.rs: render_tree(), expand_node(), collapse_node(), handle_navigation()
-- [ ] T087 [P] [US9] Implement TreeComponent in src/presentation/components/tree.rs: reusable tree widget with indentation
-- [ ] T088 [US9] Add CategoryTreeScreen to App state machine in src/presentation/app.rs
+- [ ] T082 [P] [US9] Implement hierarchy query methods in CategoryRepository trait in src/asset_management/domain/category/repository.rs: find_ancestors(), find_descendants(), find_children(), has_children(), has_assets()
+- [ ] T083 [US9] Implement hierarchy queries in SqliteCategoryRepository in src/asset_management/infrastructure/persistence/category_repository.rs using recursive CTEs (depends on T082)
+- [ ] T084 [P] [US9] Implement CategoryHierarchyService in src/asset_management/domain/shared/services.rs: validate_no_cycle(), get_breadcrumb()
+- [ ] T085 [US9] Implement CategoryService in src/asset_management/application/category_service.rs: create_category(), update_category(), delete_category() with validation (depends on T084)
+- [ ] T086 [US9] Implement CategoryTreeScreen in src/asset_management/presentation/screens/category_tree.rs: render_tree(), expand_node(), collapse_node(), handle_navigation()
+- [ ] T087 [P] [US9] Implement TreeComponent in src/asset_management/presentation/components/tree.rs: reusable tree widget with indentation
+- [ ] T088 [US9] Add CategoryTreeScreen to App state machine in src/asset_management/presentation/app.rs
 
 **Checkpoint**: User can now manage category hierarchy (US1-9 all functional)
 
@@ -310,15 +313,15 @@
 
 ### Tests for User Story 10 (TDD)
 
-- [ ] T089 [P] [US10] Integration test: Hierarchical filtering in tests/integration/asset_query_test.rs - test_filter_by_parent_includes_descendants()
+- [ ] T089 [P] [US10] Integration test: Hierarchical filtering in tests/asset_management/integration/asset_query_test.rs - test_filter_by_parent_includes_descendants()
 
 ### Implementation for User Story 10
 
-- [ ] T090 [US10] Add hierarchical filtering to AssetRepository trait in src/domain/asset/repository.rs: find_by_category_with_descendants()
-- [ ] T091 [US10] Implement hierarchical query in SqliteAssetRepository in src/infrastructure/persistence/asset_repository.rs (depends on T090)
-- [ ] T092 [US10] Extend AssetService in src/application/asset_service.rs: filter_by_category_hierarchy()
-- [ ] T093 [US10] Add "include descendants" option to AssetListScreen filter dialog in src/presentation/screens/asset_list.rs
-- [ ] T094 [US10] Display breadcrumb navigation in AssetListScreen and AssetDetailScreen in src/presentation/screens/
+- [ ] T090 [US10] Add hierarchical filtering to AssetRepository trait in src/asset_management/domain/asset/repository.rs: find_by_category_with_descendants()
+- [ ] T091 [US10] Implement hierarchical query in SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs (depends on T090)
+- [ ] T092 [US10] Extend AssetService in src/asset_management/application/asset_service.rs: filter_by_category_hierarchy()
+- [ ] T093 [US10] Add "include descendants" option to AssetListScreen filter dialog in src/asset_management/presentation/screens/asset_list.rs
+- [ ] T094 [US10] Display breadcrumb navigation in AssetListScreen and AssetDetailScreen in src/asset_management/presentation/screens/
 
 **Checkpoint**: All 10 user stories are now implemented and functional!
 
@@ -328,11 +331,11 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T095 [P] Implement Markdown export service in src/infrastructure/export/markdown.rs: export_all_assets(), generate_markdown_table()
+- [ ] T095 [P] Implement Markdown export service in src/asset_management/infrastructure/export/markdown.rs: export_all_assets(), generate_markdown_table()
 - [ ] T096 [P] Add export command to main.rs: `lazybook export --output assets.md`
-- [ ] T097 [P] Implement HelpScreen in src/presentation/screens/help.rs with keybinding reference table
-- [ ] T098 [P] Add terminal size validation in src/presentation/app.rs: check minimum 80x24, display warning
-- [ ] T099 [P] Implement dynamic layout adjustment for terminal resize in src/presentation/app.rs
+- [ ] T097 [P] Implement HelpScreen in src/asset_management/presentation/screens/help.rs with keybinding reference table
+- [ ] T098 [P] Add terminal size validation in src/asset_management/presentation/app.rs: check minimum 80x24, display warning
+- [ ] T099 [P] Implement dynamic layout adjustment for terminal resize in src/asset_management/presentation/app.rs
 - [ ] T100 [P] Add comprehensive error handling for all database operations (wrap with anyhow context)
 - [ ] T101 [P] Implement graceful shutdown on Ctrl+C in main.rs
 - [ ] T102 Code review and refactoring: extract common patterns, reduce duplication
