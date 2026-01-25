@@ -1,0 +1,40 @@
+[package]
+name = "lazybook"
+version = "0.1.0"
+edition = "2024"
+authors = ["lazybook contributors"]
+license = "MIT"
+description = "Personal asset management TUI application"
+
+[dependencies]
+# TUI Framework
+ratatui = "0.30"
+crossterm = "0.29"
+
+# Database
+rusqlite = { version = "0.38", features = ["bundled"] }
+
+# CLI
+clap = { version = "4.4", features = ["derive"] }
+
+# Error Handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Date/Time
+chrono = "0.4"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[[test]]
+name = "integration"
+path = "tests/asset_management/integration/mod.rs"

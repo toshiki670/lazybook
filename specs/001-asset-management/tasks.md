@@ -44,14 +44,14 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Rust project with Cargo.toml using `cargo init --name lazybook`
-- [ ] T002 [P] Add dependencies to Cargo.toml: ratatui@0.25, crossterm@0.27, rusqlite (bundled), clap (derive), thiserror, anyhow, chrono, log, env_logger, serde, serde_json
-- [ ] T003 [P] Configure clippy and rustfmt settings in rustfmt.toml and clippy.toml
-- [ ] T004 [P] Setup mise configuration in .mise.toml for Rust stable toolchain
-- [ ] T005 Create directory structure: src/{asset_management/{domain,application,infrastructure,presentation},shared}, tests/asset_management/{unit,integration,contract}, migrations/
-- [ ] T006 [P] Create module files: src/lib.rs, src/main.rs, src/asset_management/mod.rs, src/shared/mod.rs, and all nested mod.rs files per plan.md structure
-- [ ] T007 [P] Create initial migration 001_initial_schema.sql in migrations/ with all 5 tables (assets, categories, asset_categories, asset_histories, change_histories, schema_version)
-- [ ] T008 [P] Create seed migration 002_seed_categories.sql with initial category hierarchy (家電, 衣類, 書籍, その他)
+- [X] T001 Initialize Rust project with Cargo.toml using `cargo init --name lazybook`
+- [X] T002 [P] Add dependencies to Cargo.toml: ratatui@0.25, crossterm@0.27, rusqlite (bundled), clap (derive), thiserror, anyhow, chrono, log, env_logger, serde, serde_json
+- [X] T003 [P] Configure clippy and rustfmt settings in rustfmt.toml and clippy.toml
+- [X] T004 [P] Setup mise configuration in .mise.toml for Rust stable toolchain
+- [X] T005 Create directory structure: src/{asset_management/{domain,application,infrastructure,presentation},shared}, tests/asset_management/{unit,integration,contract}, migrations/
+- [X] T006 [P] Create module files: src/lib.rs, src/main.rs, src/asset_management/mod.rs, src/shared/mod.rs, and all nested mod.rs files per plan.md structure
+- [X] T007 [P] Create initial migration 001_initial_schema.sql in migrations/ with all 5 tables (assets, categories, asset_categories, asset_histories, change_histories, schema_version)
+- [X] T008 [P] Create seed migration 002_seed_categories.sql with initial category hierarchy (家電, 衣類, 書籍, その他)
 
 **Checkpoint**: Project structure complete, ready for foundational implementation
 
@@ -63,12 +63,15 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 Implement Error types in src/asset_management/domain/shared/types.rs: AssetError, CategoryError, PriceError using thiserror
-- [ ] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
-- [ ] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
-- [ ] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
-- [ ] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database()
-- [ ] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
+**FRs**: FR-010, FR-011, FR-013 (基盤要件: データ永続化、起動時読み込み、キーボード操作)
+
+- [X] T009 Implement Error types in src/asset_management/domain/shared/types.rs: AssetError, CategoryError, PriceError using thiserror
+- [X] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
+- [X] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
+- [X] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
+  - ⚠️ **TODO**: Add transaction management to apply_migration() - wrap SQL execution and schema_version record in transaction (rusqlite::Connection::transaction())
+- [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
+- [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -80,7 +83,7 @@
 
 **Independent Test**: 資産を1件登録し、登録した情報が正しく保存されていることを確認
 
-**FRs**: FR-001, FR-002, FR-010, FR-012, FR-014, FR-022
+**FRs**: FR-001, FR-002, FR-010, FR-011, FR-012, FR-013, FR-014, FR-022
 **SCs**: SC-001 (30秒以内に登録)
 
 ---
@@ -92,28 +95,28 @@
 **Why this first**: End-to-end integration (UI → Service → Repository → Database) を早期に検証。すべてのレイヤーが正しく接続されているか確認。
 
 **Tests (Write FIRST, ensure FAIL)**:
-- [ ] T015 [S1] [US1] Integration test: End-to-end minimal asset creation in tests/asset_management/integration/asset_minimal_test.rs - test_create_asset_with_name_only(), test_list_created_assets()
+- [X] T015 [S1] [US1] Integration test: End-to-end minimal asset creation in tests/asset_management/integration/asset_minimal_test.rs - test_create_asset_with_name_only(), test_list_created_assets()
 
 **Implementation (All layers in sequence)**:
 
 **Domain Layer**:
-- [ ] T016 [S1] [US1] Implement minimal Asset entity in src/asset_management/domain/asset/entity.rs: Asset struct with id+name only, new(name), validate_name()
+- [X] T016 [S1] [US1] Implement minimal Asset entity in src/asset_management/domain/asset/entity.rs: Asset struct with id+name only, new(name), validate_name()
 
 **Infrastructure Layer**:
-- [ ] T017 [S1] [US1] Implement minimal SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save(asset), find_all() - INSERT/SELECT for assets table
+- [X] T017 [S1] [US1] Implement minimal SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save(asset), find_all() - INSERT/SELECT for assets table
 
 **Application Layer**:
-- [ ] T018 [S1] [US1] Implement minimal AssetService in src/asset_management/application/asset_service.rs: create_asset(name) -> Result<Asset>
+- [X] T018 [S1] [US1] Implement minimal AssetService in src/asset_management/application/asset_service.rs: create_asset(name) -> Result<Asset>
 
 **Presentation Layer**:
-- [ ] T019 [S1] [US1] Implement minimal AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: render name input field, handle Enter key, save action
-- [ ] T020 [S1] [US1] Implement minimal AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: render table with name column, display all assets
-- [ ] T021 [S1] [US1] Implement minimal App state machine in src/asset_management/presentation/app.rs: Screen enum (List, Form), transition logic, event loop
+- [X] T019 [S1] [US1] Implement minimal AssetFormScreen in src/asset_management/presentation/screens/asset_form.rs: render name input field, handle Enter key, save action (FR-013: キーボードのみ操作)
+- [X] T020 [S1] [US1] Implement minimal AssetListScreen in src/asset_management/presentation/screens/asset_list.rs: render table with name column, display all assets (FR-013: キーボードのみ操作)
+- [X] T021 [S1] [US1] Implement minimal App state machine in src/asset_management/presentation/app.rs: Screen enum (List, Form), transition logic, event loop (FR-013: キーボードのみ操作)
 
 **Integration**:
-- [ ] T022 [S1] [US1] Wire up main.rs: initialize database, apply migrations, launch TUI app
+- [X] T022 [S1] [US1] Wire up main.rs: initialize database, apply migrations, launch TUI app (FR-010, FR-011: データ永続化と起動時読み込み)
 
-**Checkpoint**: ✅ **DEMO** - `cargo run` → TUI起動 → 名前入力 → 保存 → 一覧画面に表示される（8タスク）
+**Checkpoint**: ✅ **DEMO** - `cargo run` → TUI起動 → 名前入力 → 保存 → 一覧画面に表示される（8タスク完了）
 
 ---
 
@@ -137,6 +140,7 @@
 **Infrastructure Layer**:
 - [ ] T028 [S2] [US1] Implement SqliteCategoryRepository in src/asset_management/infrastructure/persistence/category_repository.rs: find_all(), find_by_id(), find_roots()
 - [ ] T029 [S2] [US1] Extend SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save with asset_categories junction table, find_all with JOIN
+  - ⚠️ **TODO**: Add transaction management to save() - wrap Asset + AssetCategory operations in transaction (rusqlite::Connection::transaction())
 
 **Application Layer**:
 - [ ] T030 [S2] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: create_asset(name, category_ids), list_categories()
@@ -200,6 +204,7 @@
 
 **Application Layer**:
 - [ ] T046 [S4] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: record ChangeHistory after create_asset() operation
+  - ⚠️ **TODO**: Add transaction management - wrap Asset + AssetCategory + ChangeHistory operations in transaction (Transaction Boundary from data-model.md)
 
 **Checkpoint**: ✅ **DEMO** - 資産作成 → change_histories テーブルにレコード保存確認（4タスク累計31）
 
@@ -359,7 +364,7 @@
 
 **Independent Test**: 既存の資産を編集し、変更が正しく保存されることを確認
 
-**FRs**: FR-008, FR-012, FR-022
+**FRs**: FR-008, FR-012, FR-022, FR-033
 
 ---
 
@@ -374,7 +379,7 @@
 **Implementation**:
 
 **Domain Layer**:
-- [ ] T075 [S1] [US4] Add update methods to Asset entity in src/asset_management/domain/asset/entity.rs: update_name(), update_manufacturer(), update_memo(), update_categories()
+- [ ] T075 [S1] [US4] Add update methods to Asset entity in src/asset_management/domain/asset/entity.rs: update_name(), update_manufacturer(), update_memo(), update_categories() (FR-033: カテゴリ追加・削除機能)
 
 **Infrastructure Layer**:
 - [ ] T076 [S1] [US4] Extend AssetRepository trait in src/asset_management/domain/asset/repository.rs: update(asset)
@@ -384,7 +389,7 @@
 - [ ] T078 [S1] [US4] Implement AssetService::update_asset in src/asset_management/application/asset_service.rs: update_asset(id, ...) with ChangeHistory recording
 
 **Presentation Layer**:
-- [ ] T079 [S1] [US4] Extend AssetFormScreen with Edit mode in src/asset_management/presentation/screens/asset_form.rs: load_existing_asset(), pre-populate fields, update_asset() on save
+- [ ] T079 [S1] [US4] Extend AssetFormScreen with Edit mode in src/asset_management/presentation/screens/asset_form.rs: load_existing_asset(), pre-populate fields, update_asset() on save (FR-033: 編集時のカテゴリ追加・削除UI)
 - [ ] T080 [S1] [US4] Add edit transition from AssetDetailScreen in src/asset_management/presentation/screens/asset_detail.rs: E key to enter edit mode
 
 **Checkpoint**: ✅ **DEMO** - 詳細画面でEキー → 編集モード → 変更 → 保存（8タスク）

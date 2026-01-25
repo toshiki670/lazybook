@@ -1,0 +1,9 @@
+# mise configuration for lazybook
+# https://mise.jdx.dev/
+
+[tools]
+rust = "stable"
+
+[env]
+RUST_BACKTRACE = "1"
+RUST_LOG = "info"

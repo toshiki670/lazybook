@@ -290,6 +290,13 @@ impl Duration {
 - 履歴記録時: AssetHistory + Asset.quantity更新 + ChangeHistory (Update)
 - Asset削除時: Asset + 関連するすべての履歴 + ChangeHistory (Delete)
 
+**実装方針**:
+- Repository層でトランザクション管理を実装（rusqliteの`transaction()`を使用）
+- 複数テーブルへの操作は同一トランザクション内で実行
+- エラー時は自動ロールバック（TransactionのDrop実装）
+- Application層（Service）からはトランザクションを意識しない設計
+- 将来的な拡張: ロールバック機能、ネストされたトランザクション（savepoint）は安定バージョンリリース後に検討
+
 ---
 
 ### Category Aggregate
@@ -446,6 +453,11 @@ CREATE INDEX idx_change_histories_operation_at ON change_histories(operation_at)
 1. **Initial Schema**: `migrations/001_initial_schema.sql`
 2. **Manual Execution**: アプリ起動時にマイグレーション適用
 3. **Version Table**: `schema_version` テーブルで管理
+4. **Transaction Management**: 
+   - 各マイグレーションはトランザクション内で実行（rusqliteの`transaction()`を使用）
+   - 失敗時は自動ロールバック（TransactionのDrop実装により）
+   - `schema_version`への記録もトランザクション内で実行
+   - 既存データの保護を確保
 
 ```sql
 CREATE TABLE schema_version (
@@ -453,6 +465,12 @@ CREATE TABLE schema_version (
     applied_at TEXT NOT NULL
 );
 ```
+
+**実装方針**:
+- `rusqlite::Connection::transaction()`を使用してトランザクション開始
+- マイグレーションSQL実行と`schema_version`への記録を同一トランザクション内で実行
+- エラー時は自動ロールバック（TransactionのDrop実装）
+- ロールバック機能自体は安定バージョンリリース後に検討（現時点では自動ロールバックで対応）
 
 ---
 

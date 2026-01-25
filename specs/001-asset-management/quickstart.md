@@ -205,8 +205,10 @@ fn main() -> anyhow::Result<()> {
     println!("lazybook Asset Management TUI");
     println!("準備中...");
     
-    // TODO: TUIアプリ起動
-    // let mut app = App::new()?;
+    // TUIアプリ起動
+    // 実装は Phase 3 Slice 1.1 (T022) で行う
+    // let mut app = asset_management::presentation::App::new()?;
+    // app.run()?;
     // app.run()?;
     
     Ok(())
