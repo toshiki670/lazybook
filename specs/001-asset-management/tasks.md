@@ -782,7 +782,7 @@ Week 3-4: US4-10追加
 | 11 | US9: Manage Category Hierarchy | 2 slices | 14 tasks | After Slice 9.1 (9 tasks) |
 | 12 | US10: Filter by Hierarchy | 2 slices | 7 tasks | After Slice 10.1 (4 tasks) |
 | 13 | Polish | - | 16 tasks | - |
-| **Total** | **10 User Stories** | **20 Slices** | **157 tasks** | **9 demo points** |
+| **Total** | **10 User Stories** | **20 Slices** | **164 tasks** | **9 demo points** |
 
 **Key Achievement**: First working demo after only **10 tasks** (Setup + Foundational + Slice 1.1 + quality checks)
 
