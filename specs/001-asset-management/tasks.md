@@ -71,7 +71,7 @@
 - [X] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
 - [X] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
 - [X] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
-  - ⚠️ **TODO**: Add transaction management to apply_migration() - wrap SQL execution and schema_version record in transaction (rusqlite::Connection::transaction())
+- [ ] T012a [P] Add transaction management to apply_migration() in src/asset_management/infrastructure/persistence/migrations.rs: wrap SQL execution and schema_version record in rusqlite::Connection::transaction(). Reference: data-model.md "Transaction Boundary" section (L456-472)
 - [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
 - [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
 - [X] T014a [P] Run cargo fmt: `cargo fmt --all` to format all code
@@ -146,7 +146,7 @@
 **Infrastructure Layer**:
 - [ ] T028 [S2] [US1] Implement SqliteCategoryRepository in src/asset_management/infrastructure/persistence/category_repository.rs: find_all(), find_by_id(), find_roots()
 - [ ] T029 [S2] [US1] Extend SqliteAssetRepository in src/asset_management/infrastructure/persistence/asset_repository.rs: save with asset_categories junction table, find_all with JOIN
-  - ⚠️ **TODO**: Add transaction management to save() - wrap Asset + AssetCategory operations in transaction (rusqlite::Connection::transaction())
+- [ ] T029a [S2] [US1] Add transaction management to SqliteAssetRepository::save() in src/asset_management/infrastructure/persistence/asset_repository.rs: wrap Asset INSERT and AssetCategory INSERT operations in rusqlite::Connection::transaction(). Reference: data-model.md "Transaction Boundary" section (L288-291) - Asset作成時: Asset + AssetCategory
 
 **Application Layer**:
 - [ ] T030 [S2] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: create_asset(name, category_ids), list_categories()
@@ -214,9 +214,9 @@
 
 **Application Layer**:
 - [ ] T046 [S4] [US1] Extend AssetService in src/asset_management/application/asset_service.rs: record ChangeHistory after create_asset() operation
-  - ⚠️ **TODO**: Add transaction management - wrap Asset + AssetCategory + ChangeHistory operations in transaction (Transaction Boundary from data-model.md)
-- [ ] T046a [S4] [US1] Run cargo fmt: `cargo fmt --all` to format all code
-- [ ] T046b [S4] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
+- [ ] T046a [S4] [US1] Extend transaction management in SqliteAssetRepository::save() to include ChangeHistory: wrap Asset + AssetCategory + ChangeHistory operations in rusqlite::Connection::transaction(). Reference: data-model.md "Transaction Boundary" section (L288-291) - Asset作成時: Asset + AssetCategory + ChangeHistory (Create). Note: Repository層でトランザクション管理を実装し、Application層（Service）からはトランザクションを意識しない設計
+- [ ] T046b [S4] [US1] Run cargo fmt: `cargo fmt --all` to format all code
+- [ ] T046c [S4] [US1] Run cargo clippy: `cargo clippy -- -D warnings` to check code quality
 
 **Checkpoint**: ✅ **DEMO** - 資産作成 → change_histories テーブルにレコード保存確認（6タスク累計33）
 
@@ -843,5 +843,5 @@ For EVERY slice:
 **Quality checks are included as tasks** at key milestones:
 - Phase 1 completion (T008a, T008b)
 - Phase 2 completion (T014a, T014b)
-- Each slice completion (T022a/b, T033a/b, T041a/b, T046a/b)
+- Each slice completion (T022a/b, T033a/b, T041a/b, T046a/b/c)
 - Final polish phase (T147, T148)
