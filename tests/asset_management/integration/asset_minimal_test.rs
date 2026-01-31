@@ -19,8 +19,8 @@ fn setup_test_db() -> (TempDir, PathBuf) {
 fn test_create_asset_with_name_only() {
     // Setup
     let (_temp_dir, db_path) = setup_test_db();
-    let conn = establish_connection(&db_path).expect("Failed to establish connection");
-    initialize_database(&conn).expect("Failed to initialize database");
+    let mut conn = establish_connection(&db_path).expect("Failed to establish connection");
+    initialize_database(&mut conn).expect("Failed to initialize database");
 
     let repository = SqliteAssetRepository::new(conn);
     let service = AssetService::new(repository);
@@ -44,8 +44,8 @@ fn test_create_asset_with_name_only() {
 fn test_list_created_assets() {
     // Setup
     let (_temp_dir, db_path) = setup_test_db();
-    let conn = establish_connection(&db_path).expect("Failed to establish connection");
-    initialize_database(&conn).expect("Failed to initialize database");
+    let mut conn = establish_connection(&db_path).expect("Failed to establish connection");
+    initialize_database(&mut conn).expect("Failed to initialize database");
 
     let repository = SqliteAssetRepository::new(conn);
     let service = AssetService::new(repository);

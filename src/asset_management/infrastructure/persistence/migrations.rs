@@ -8,7 +8,7 @@ use std::path::Path;
 const MIGRATIONS_DIR: &str = "migrations";
 
 /// Apply all pending migrations
-pub fn apply_migrations(conn: &Connection) -> Result<()> {
+pub fn apply_migrations(conn: &mut Connection) -> Result<()> {
     // Create schema_version table if it doesn't exist
     create_schema_version_table(conn)?;
 
@@ -102,14 +102,32 @@ fn find_migration_files() -> Result<Vec<(i32, std::path::PathBuf)>> {
 }
 
 /// Apply a single migration file
-fn apply_migration(conn: &Connection, version: i32, filepath: &Path) -> Result<()> {
+///
+/// SQL execution and schema_version record run in a single transaction
+/// so that failures roll back both (per data-model.md Transaction Boundary).
+fn apply_migration(conn: &mut Connection, version: i32, filepath: &Path) -> Result<()> {
     // Read SQL file
     let sql = fs::read_to_string(filepath)
         .context(format!("Failed to read migration file: {:?}", filepath))?;
 
+    let tx = conn
+        .transaction()
+        .context("Failed to begin migration transaction")?;
+
     // Execute SQL (this handles multiple statements)
-    conn.execute_batch(&sql)
+    tx.execute_batch(&sql)
         .context(format!("Failed to execute migration {}", version))?;
+
+    // Record schema version in the same transaction
+    let applied_at = chrono::Utc::now().to_rfc3339();
+    tx.execute(
+        "INSERT INTO schema_version (version, applied_at) VALUES (?1, ?2)",
+        rusqlite::params![version, applied_at],
+    )
+    .context(format!("Failed to record schema version {}", version))?;
+
+    tx.commit()
+        .context("Failed to commit migration transaction")?;
 
     log::info!("Migration {} applied successfully", version);
 

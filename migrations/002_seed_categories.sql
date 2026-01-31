@@ -9,7 +9,3 @@ VALUES
     ('衣類', NULL, 1, datetime('now'), datetime('now')),
     ('書籍', NULL, 2, datetime('now'), datetime('now')),
     ('その他', NULL, 3, datetime('now'), datetime('now'));
-
--- Record migration
-INSERT INTO schema_version (version, applied_at) 
-VALUES (2, datetime('now'));

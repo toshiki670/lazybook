@@ -71,7 +71,7 @@
 - [X] T010 [P] Implement Value Objects in src/asset_management/domain/shared/types.rs: AssetId, CategoryId, Price, Duration with validation
 - [X] T011 [P] Setup logging infrastructure in src/shared/logging/logger.rs using log + env_logger
 - [X] T012 [P] Implement database migration system in src/asset_management/infrastructure/persistence/migrations.rs: apply_migrations(), check_schema_version()
-- [ ] T012a [P] Add transaction management to apply_migration() in src/asset_management/infrastructure/persistence/migrations.rs: wrap SQL execution and schema_version record in rusqlite::Connection::transaction(). Reference: data-model.md "Transaction Boundary" section (L456-472)
+- [X] T012a [P] Add transaction management to apply_migration() in src/asset_management/infrastructure/persistence/migrations.rs: wrap SQL execution and schema_version record in rusqlite::Connection::transaction(). Reference: data-model.md "Transaction Boundary" section (L456-472)
 - [X] T013 Implement database connection manager in src/asset_management/infrastructure/persistence/mod.rs: establish_connection(), initialize_database() (FR-010, FR-011: データ永続化と起動時読み込み)
 - [X] T014 [P] Create Repository traits in src/asset_management/domain/asset/repository.rs, src/asset_management/domain/category/repository.rs (interfaces only, no implementation yet)
 - [X] T014a [P] Run cargo fmt: `cargo fmt --all` to format all code

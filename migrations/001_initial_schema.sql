@@ -84,7 +84,3 @@ CREATE TABLE change_histories (
 
 CREATE INDEX idx_change_histories_asset_id ON change_histories(asset_id);
 CREATE INDEX idx_change_histories_operation_at ON change_histories(operation_at);
-
--- Record migration
-INSERT INTO schema_version (version, applied_at) 
-VALUES (1, datetime('now'));
