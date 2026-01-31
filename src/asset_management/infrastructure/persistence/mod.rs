@@ -20,7 +20,7 @@ pub fn establish_connection(db_path: &Path) -> Result<Connection> {
 }
 
 /// Initialize database with migrations
-pub fn initialize_database(conn: &Connection) -> Result<()> {
+pub fn initialize_database(conn: &mut Connection) -> Result<()> {
     migrations::apply_migrations(conn)?;
     Ok(())
 }

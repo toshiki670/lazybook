@@ -23,8 +23,8 @@ use crate::asset_management::infrastructure::persistence::{
 pub fn run() -> Result<()> {
     // Setup database
     let db_path = get_database_path()?;
-    let conn = establish_connection(&db_path)?;
-    initialize_database(&conn)?;
+    let mut conn = establish_connection(&db_path)?;
+    initialize_database(&mut conn)?;
 
     // Create repository and service
     let repository = SqliteAssetRepository::new(conn);
