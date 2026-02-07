@@ -1,26 +1,15 @@
 {
-  "name": "lazybook (Rust + mise)",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "name": "lazybook (Rust)",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "dev",
   "workspaceFolder": "/workspaces/lazybook",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/lazybook,type=bind",
+  "postStartCommand": "cargo fetch",
+  "remoteUser": "root",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "rust-lang.rust-analyzer",
-        "tamasfe.even-better-toml"
-      ],
       "settings": {
-        "rust-analyzer.cargo.buildScripts.enable": true
+        "terminal.integrated.defaultProfile.linux": "zsh"
       }
     }
-  },
-  "postCreateCommand": "mise install",
-  "postStartCommand": "cargo fetch",
-  "remoteUser": "vscode",
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {}
   }
 }

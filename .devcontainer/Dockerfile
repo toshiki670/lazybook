@@ -1,20 +1,10 @@
-# Dev container for lazybook: Rust + mise
-# Cursor Agent runs inside this container and uses this environment for development.
-FROM mcr.microsoft.com/devcontainers/base:bookworm
+# Dev container for lazybook: standard Docker (Rust official image)
+# For Cursor CLI Agent. No mise; local install via private tap.
+FROM rust:1-bookworm
 
-# Install build essentials (for rusqlite native deps if needed)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libssl-dev \
-    pkg-config \
-    curl \
-    ca-certificates \
+# Install zsh and set as default shell
+RUN apt-get update && apt-get install -y --no-install-recommends zsh \
+    && usermod -s /usr/bin/zsh root \
     && rm -rf /var/lib/apt/lists/*
-
-# Install mise for vscode user (postCreateCommand runs as vscode)
-USER vscode
-RUN curl -sSf https://mise.run | sh \
-    && echo 'eval "$(/home/vscode/.local/bin/mise activate bash)"' >> ~/.bashrc
-ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 WORKDIR /workspaces/lazybook

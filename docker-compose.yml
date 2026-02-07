@@ -1,0 +1,13 @@
+# Dev container: same definition for Cursor Dev Containers and `docker compose run`
+# Run from repo root: docker compose build && docker compose run --rm dev
+services:
+  dev:
+    build:
+      context: .devcontainer
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspaces/lazybook
+    working_dir: /workspaces/lazybook
+    stdin_open: true
+    tty: true
+    command: ["zsh"]
