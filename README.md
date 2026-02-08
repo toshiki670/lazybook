@@ -11,31 +11,47 @@ lazybook is a personal tool for managing private information through an efficien
 - **Language**: Rust (stable)
 - **Interface**: TUI (Text-based User Interface)
 - **Architecture**: Domain-Driven Design (DDD)
-- **Tool Management**: mise
 
 ## Development
 
 This project follows the SpecKit development workflow. See `.specify/memory/constitution.md` for detailed development principles and constraints.
 
-### Prerequisites
+### Local install (use the app on your machine)
 
-Install mise for tool management:
+Install via a private Homebrew tap:
 
 ```bash
-# Follow mise installation instructions for your platform
-# https://mise.jdx.dev/getting-started.html
+brew tap toshiki670/lazybook   # once
+brew install lazybook
 ```
 
-### Setup
+### Development in a container (Cursor CLI Agent)
+
+Development uses **standard Docker** (no mise): Rust official image + zsh.
+
+1. **Prerequisites**: Docker (or Docker Desktop) and Dev Containers support (Cursor includes this).
+2. Open this repository in Cursor.
+3. Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) → **Dev Containers: Reopen in Container**.
+4. Wait for the container to build (first time) and for `postStartCommand` (`cargo fetch`) to finish.
+5. The workspace runs inside the container; Cursor Agent uses the container’s terminal and tools.
+
+The container is defined in `.devcontainer/` (Rust official image + zsh). All edits and commands from Agent apply inside the container.
+
+To get a shell inside the container without Cursor (from the repo root):
 
 ```bash
-# Install project tools via mise
-mise install
+docker compose build
+docker compose run --rm dev
+```
 
-# Build the project
-cargo build
+### Build from source on host (optional)
 
-# Run tests
+If you want to build on the host instead of using the tap or container:
+
+```bash
+# Install Rust (e.g. via mise: https://mise.jdx.dev/)
+mise install   # if using .mise.toml
+cargo build --release
 cargo test
 ```
 

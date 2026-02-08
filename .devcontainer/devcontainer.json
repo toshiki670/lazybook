@@ -1,0 +1,15 @@
+{
+  "name": "lazybook (Rust)",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspaces/lazybook",
+  "postStartCommand": "cargo fetch",
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  }
+}
