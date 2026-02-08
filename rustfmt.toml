@@ -1,0 +1,8 @@
+# Rust formatting configuration
+edition = "2024"
+max_width = 100
+tab_spaces = 4
+newline_style = "Unix"
+use_small_heuristics = "Default"
+# Note: imports_granularity and group_imports are nightly-only features
+# Removed for stable Rust compatibility
